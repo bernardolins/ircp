@@ -26,4 +26,15 @@ defmodule Alchevents.Registry.TopicTest do
       assert :ok == Topic.register(:channel, :topic3)
     end
   end
+
+  describe "#lookup" do
+    test "returns not_found when the topic does not exist" do
+      assert {:error, :not_found} == Topic.lookup(:channel, :topic)
+    end
+
+    test "returns ok and the pid of the topic when the topic is found" do
+      assert :ok == Topic.register(:channel, :topic)
+      assert {:ok, {self(), []}} == Topic.lookup(:channel, :topic)
+    end
+  end
 end

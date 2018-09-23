@@ -15,4 +15,11 @@ defmodule Alchevents.Registry.Topic do
       {:error, reason} -> {:error, reason}
     end
   end
+
+  def lookup(channel, topic) do
+    case Registry.lookup(__MODULE__, {channel, topic}) do
+      [] -> {:error, :not_found}
+      [{pid, opts}] -> {:ok, {pid, opts}}
+    end
+  end
 end
