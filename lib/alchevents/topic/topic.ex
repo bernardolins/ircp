@@ -12,22 +12,22 @@ defmodule Alchevents.Topic do
     {:producer, %State{}, dispatcher: GenStage.BroadcastDispatcher}
   end
 
-  def publish(channel, topic, event) do
+  def publish(channel, topic, message) do
     {:ok, {pid, _}} = Alchevents.Registry.Topic.lookup(channel, topic)
-    GenStage.cast(pid, {:publish, event})
+    GenStage.cast(pid, {:publish, message})
   end
 
-  def handle_cast({:publish, event}, %State{} = state) do
-    store_event(state, event)
+  def handle_cast({:publish, message}, %State{} = state) do
+    store_message(state, message)
   end
 
   def handle_demand(incoming_demand, %State{} = state) do
     change_demand_by(state, incoming_demand)
   end
 
-  defp store_event(%State{} = state, event) do
+  defp store_message(%State{} = state, message) do
     state
-    |> State.store_event(event)
+    |> State.store_event(message)
     |> dispatch_events
   end
 
@@ -42,7 +42,9 @@ defmodule Alchevents.Topic do
   defp dispatch_events(%State{} = state, event_list) do
     case State.next_event(state) do
       {:empty, new_state} -> {:noreply, event_list, new_state}
-      {:ok, event, new_state} -> dispatch_events(new_state, [event|event_list])
+      {:ok, message, new_state} ->
+        updated_state = State.update_demand(new_state, -1)
+        dispatch_events(updated_state, [message|event_list])
     end
   end
 end
