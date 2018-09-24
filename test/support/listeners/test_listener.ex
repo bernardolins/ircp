@@ -1,7 +1,7 @@
 defmodule Alchevents.Support.TestListener do
   use Alchevents.Listener
 
-  def init(_, _, opts) do
+  def init(_, opts) do
     test_pid = Keyword.get(opts, :pid, nil)
     message = Keyword.get(opts, :message, "")
     state = Keyword.get(opts, :state, 0)

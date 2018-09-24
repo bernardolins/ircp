@@ -5,17 +5,17 @@ defmodule Alchevents.Listener do
     quote do
       use GenStage
 
-      def start_link(channel, topic, options \\ []) do
-        GenStage.start_link(__MODULE__, {channel, topic, options})
+      def start_link(channel_name, options \\ []) do
+        GenStage.start_link(__MODULE__, {channel_name, options})
       end
 
-      def init({channel, topic, options}) do
-        with {:ok, initial_state} <- init(channel, topic, options),
-             {:ok, {topic, []}} <- Alchevents.Registry.Topic.lookup(channel, topic)
+      def init({channel_name, options}) do
+        with {:ok, initial_state} <- init(channel_name, options),
+             {:ok, {channel, []}} <- Alchevents.Registry.Channel.lookup(channel_name)
         do
-          {:consumer, initial_state, subscribe_to: [topic]}
+          {:consumer, initial_state, subscribe_to: [channel]}
         else
-          {:error, :not_found} -> {:stop, :topic_not_found}
+          {:error, :not_found} -> {:stop, :channel_not_found}
           unknown -> {:stop, :bad_return_value, unknown}
         end
       end

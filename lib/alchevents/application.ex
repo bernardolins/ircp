@@ -5,7 +5,7 @@ defmodule Alchevents.Application do
 
   def start(_type, _args) do
     children = [
-      Alchevents.Registry.Topic,
+      Alchevents.Registry.Channel,
     ]
 
     opts = [strategy: :one_for_one, name: Alchevents.Supervisor]

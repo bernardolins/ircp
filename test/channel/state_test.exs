@@ -1,6 +1,6 @@
-defmodule Alchevents.Topic.StateTest do
+defmodule Alchevents.Channel.StateTest do
   use ExUnit.Case
-  alias Alchevents.Topic.State
+  alias Alchevents.Channel.State
 
   describe "#new" do
     test "creates a struct with an empty queue and demand 0" do
