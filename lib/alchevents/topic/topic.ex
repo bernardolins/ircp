@@ -8,13 +8,17 @@ defmodule Alchevents.Topic do
   def start_link(channel, topic), do: GenStage.start_link(__MODULE__, {channel, topic})
 
   def init({channel, topic}) do
-    :ok = Alchevents.Registry.Topic.register(channel, topic)
-    {:producer, %State{}, dispatcher: GenStage.BroadcastDispatcher}
+    case Alchevents.Registry.Topic.register(channel, topic) do
+      :ok -> {:producer, %State{}, dispatcher: GenStage.BroadcastDispatcher}
+      {:error, reason} -> {:stop, reason}
+    end
   end
 
   def publish(channel, topic, message) do
-    {:ok, {pid, _}} = Alchevents.Registry.Topic.lookup(channel, topic)
-    GenStage.cast(pid, {:publish, message})
+    case Alchevents.Registry.Topic.lookup(channel, topic) do
+      {:ok, {pid, _}} -> GenStage.cast(pid, {:publish, message})
+      {:error, :not_found} -> {:error, :topic_not_found}
+    end
   end
 
   def handle_cast({:publish, message}, %State{} = state) do
