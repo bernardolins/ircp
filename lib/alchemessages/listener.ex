@@ -1,5 +1,6 @@
 defmodule Alchemessages.Listener do
-  def query(pid, message), do: GenStage.call(pid, message)
+  def ask(who, message), do: GenStage.call(who, message)
+  def tell(who, message), do: GenStage.cast(who, message)
 
   defmacro __using__(_) do
     quote do
@@ -10,7 +11,7 @@ defmodule Alchemessages.Listener do
       end
 
       def init({channel_name, options}) do
-        with {:ok, initial_state} <- init(channel_name, options),
+        with {:ok, initial_state} <- join(channel_name, options),
              {:ok, {channel, []}} <- Alchemessages.Registry.Channel.lookup(channel_name)
         do
           {:consumer, initial_state, subscribe_to: [channel]}
@@ -24,9 +25,27 @@ defmodule Alchemessages.Listener do
         handle_messages(messages, state)
       end
 
+      def handle_call(message, from, state) do
+        case proteced_handle_question(message, from, state) do
+          {:reply, reply, state} ->
+            {:reply, reply, [], state}
+          error ->
+            {:stop, :bad_return_value, error}
+        end
+      end
+
+      def handle_cast(message, state) do
+        case proteced_handle_message(message, state) do
+          {:noreply, state} ->
+            {:noreply, [], state}
+          error ->
+            {:stop, :bad_return_value, error}
+        end
+      end
+
       defp handle_messages([], state), do: {:noreply, [], state}
       defp handle_messages([message|messages], state) do
-        case handle_message(message, state) do
+        case proteced_handle_message(message, state) do
           {:noreply, new_state} ->
             handle_messages(messages, new_state)
           error ->
@@ -34,17 +53,26 @@ defmodule Alchemessages.Listener do
         end
       end
 
-      def handle_call(message, from, state) do
-        case handle_query(message, from, state) do
-          {:reply, reply, state} -> {:reply, reply, [], state}
-          error -> {:stop, :bad_return_value, error}
+      defp proteced_handle_message(message, state) do
+        try do
+          handle_message(message, state)
+        rescue
+          FunctionClauseError -> {:noreply, state}
         end
       end
 
-      def init(_, _, _), do: {:ok, nil}
+      defp proteced_handle_question(message, from, state) do
+        try do
+          handle_question(message, from, state)
+        rescue
+          FunctionClauseError -> {:reply, :not_implemented, state}
+        end
+      end
+
+      def join(_, _, _), do: {:ok, nil}
       def handle_message(_, state), do: {:noreply, state}
-      def handle_query(_, _, state), do: {:reply, :not_implemented, state}
-      defoverridable [init: 3, handle_message: 2, handle_query: 3]
+      def handle_question(_, _, state), do: {:reply, :not_implemented, state}
+      defoverridable [join: 3, handle_message: 2, handle_question: 3]
     end
   end
 end

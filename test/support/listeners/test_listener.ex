@@ -1,7 +1,7 @@
 defmodule Alchemessages.Support.TestListener do
   use Alchemessages.Listener
 
-  def init(_, opts) do
+  def join(_, opts) do
     test_pid = Keyword.get(opts, :pid, nil)
     message = Keyword.get(opts, :message, "")
     state = Keyword.get(opts, :state, 0)
@@ -14,11 +14,11 @@ defmodule Alchemessages.Support.TestListener do
     {:noreply, state}
   end
 
-  def handle_query({:return_message, message}, _from, state) do
+  def handle_question({:return_message, message}, _from, state) do
     {:reply, message, state}
   end
 
-  def handle_query(:return_state, _from, state) do
+  def handle_question(:return_state, _from, state) do
     {:reply, state, state}
   end
 end
