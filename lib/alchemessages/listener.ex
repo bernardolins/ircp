@@ -1,4 +1,4 @@
-defmodule Alchevents.Listener do
+defmodule Alchemessages.Listener do
   def query(pid, message), do: GenStage.call(pid, message)
 
   defmacro __using__(_) do
@@ -11,7 +11,7 @@ defmodule Alchevents.Listener do
 
       def init({channel_name, options}) do
         with {:ok, initial_state} <- init(channel_name, options),
-             {:ok, {channel, []}} <- Alchevents.Registry.Channel.lookup(channel_name)
+             {:ok, {channel, []}} <- Alchemessages.Registry.Channel.lookup(channel_name)
         do
           {:consumer, initial_state, subscribe_to: [channel]}
         else

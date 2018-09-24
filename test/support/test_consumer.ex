@@ -1,4 +1,4 @@
-defmodule Alchevents.Support.TestConsumer do
+defmodule Alchemessages.Support.TestConsumer do
   def start_link(producer_pid, test_pid) do
     GenStage.start_link(__MODULE__, {producer_pid, test_pid})
   end

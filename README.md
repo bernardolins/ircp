@@ -1,21 +1,21 @@
-# Alchevents
+# Alchemessages
 
 **TODO: Add description**
 
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `alchevents` to your list of dependencies in `mix.exs`:
+by adding `alchemessages` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:alchevents, "~> 0.1.0"}
+    {:alchemessages, "~> 0.1.0"}
   ]
 end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/alchevents](https://hexdocs.pm/alchevents).
+be found at [https://hexdocs.pm/alchemessages](https://hexdocs.pm/alchemessages).
 

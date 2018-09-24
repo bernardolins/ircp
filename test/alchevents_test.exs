@@ -1,8 +1,8 @@
-defmodule AlcheventsTest do
+defmodule AlchemessagesTest do
   use ExUnit.Case
-  doctest Alchevents
+  doctest Alchemessages
 
   test "greets the world" do
-    assert Alchevents.hello() == :world
+    assert Alchemessages.hello() == :world
   end
 end

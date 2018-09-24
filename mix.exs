@@ -1,9 +1,9 @@
-defmodule Alchevents.MixProject do
+defmodule Alchemessages.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :alchevents,
+      app: :alchemessages,
       version: "0.1.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -15,7 +15,7 @@ defmodule Alchevents.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Alchevents.Application, []}
+      mod: {Alchemessages.Application, []}
     ]
   end
 

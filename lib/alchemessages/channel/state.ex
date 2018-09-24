@@ -1,4 +1,4 @@
-defmodule Alchevents.Channel.State do
+defmodule Alchemessages.Channel.State do
   @moduledoc false
 
   defstruct [data: :queue.new, demand: 0]

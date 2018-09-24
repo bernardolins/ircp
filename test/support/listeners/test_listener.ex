@@ -1,5 +1,5 @@
-defmodule Alchevents.Support.TestListener do
-  use Alchevents.Listener
+defmodule Alchemessages.Support.TestListener do
+  use Alchemessages.Listener
 
   def init(_, opts) do
     test_pid = Keyword.get(opts, :pid, nil)

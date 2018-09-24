@@ -1,6 +1,6 @@
-defmodule Alchevents do
+defmodule Alchemessages do
   @moduledoc """
-  Documentation for Alchevents.
+  Documentation for Alchemessages.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule Alchevents do
 
   ## Examples
 
-      iex> Alchevents.hello()
+      iex> Alchemessages.hello()
       :world
 
   """

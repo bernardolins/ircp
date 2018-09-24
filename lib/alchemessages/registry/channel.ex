@@ -1,4 +1,4 @@
-defmodule Alchevents.Registry.Channel do
+defmodule Alchemessages.Registry.Channel do
   @registry_default_opts [
     keys: :unique,
     name: __MODULE__,
