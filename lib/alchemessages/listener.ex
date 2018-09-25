@@ -43,6 +43,15 @@ defmodule Alchemessages.Listener do
         end
       end
 
+      def handle_info(message, state) do
+        case proteced_handle_message(message, state) do
+          {:noreply, state} ->
+            {:noreply, [], state}
+          error ->
+            {:stop, :bad_return_value, error}
+        end
+      end
+
       defp handle_messages([], state), do: {:noreply, [], state}
       defp handle_messages([message|messages], state) do
         case proteced_handle_message(message, state) do

@@ -35,6 +35,13 @@ defmodule Alchemessages.ListenerTest do
     assert Listener.ask(pid, :return_state) == 0
   end
 
+  test "send_after is handled by handle_message" do
+    Alchemessages.Channel.start_link(:channel)
+    {:ok, pid} = TestListener.start_link(:channel, state: 0)
+    :timer.send_after(10, pid, {:send_to, self(), "hello"})
+    assert_receive {:message, "hello"}
+  end
+
   describe "#ask" do
     test "sends a message to the listener and wait the response if the ask handler is implemented" do
       Alchemessages.Channel.start_link(:channel)
