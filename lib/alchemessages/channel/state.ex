@@ -14,20 +14,20 @@ defmodule Alchemessages.Channel.State do
     %__MODULE__{options: opts}
   end
 
-  def buffer_message(%__MODULE__{buffer_size: buffer_size, options: opts} = state, event) do
+  def buffer_message(%__MODULE__{buffer_size: buffer_size, options: opts} = state, message) do
     max_buffer_size = Keyword.get(opts, :max_buffer_size, @default_max_buffer_size)
 
     if buffer_size < max_buffer_size do
-      add_message_to_buffer(state, event)
+      add_message_to_buffer(state, message)
     else
       state
     end
   end
 
-  def next_event(%__MODULE__{buffer: buffer, buffer_size: buffer_size} = state) do
+  def next_message(%__MODULE__{buffer: buffer, buffer_size: buffer_size} = state) do
     case :queue.out_r(buffer) do
-      {{:value, event}, buffer} ->
-        {:ok, event, %__MODULE__{state | buffer: buffer, buffer_size: buffer_size-1}}
+      {{:value, message}, buffer} ->
+        {:ok, message, %__MODULE__{state | buffer: buffer, buffer_size: buffer_size-1}}
       {:empty, buffer} ->
         {:empty, %__MODULE__{state | buffer: buffer, buffer_size: buffer_size}}
     end
@@ -38,7 +38,7 @@ defmodule Alchemessages.Channel.State do
     %__MODULE__{state | demand: demand}
   end
 
-  defp add_message_to_buffer(%__MODULE__{buffer: buffer, buffer_size: buffer_size} = state, event) do
-    %__MODULE__{state | buffer: :queue.in_r(event, buffer), buffer_size: buffer_size+1}
+  defp add_message_to_buffer(%__MODULE__{buffer: buffer, buffer_size: buffer_size} = state, message) do
+    %__MODULE__{state | buffer: :queue.in_r(message, buffer), buffer_size: buffer_size+1}
   end
 end

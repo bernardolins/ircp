@@ -7,8 +7,8 @@ defmodule Alchemessages.Support.TestConsumer do
     {:consumer, test_pid, subscribe_to: [producer_pid]}
   end
 
-  def handle_events(events, _from, test_pid) do
-    send(test_pid, {:received, events})
+  def handle_events(messages, _from, test_pid) do
+    send(test_pid, {:received, messages})
     {:noreply, [], test_pid}
   end
 end

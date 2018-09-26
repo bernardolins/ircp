@@ -32,23 +32,23 @@ defmodule Alchemessages.Channel do
   defp store_message(%State{} = state, message) do
     state
     |> State.buffer_message(message)
-    |> dispatch_events
+    |> dispatch_messages
   end
 
   defp change_demand_by(%State{} = state, demand_delta) when is_integer(demand_delta) do
     state
     |> State.update_demand(demand_delta)
-    |> dispatch_events
+    |> dispatch_messages
   end
 
-  defp dispatch_events(state, event_list \\ [])
-  defp dispatch_events(%State{demand: 0} = state, event_list), do: {:noreply, event_list, state}
-  defp dispatch_events(%State{} = state, event_list) do
-    case State.next_event(state) do
-      {:empty, new_state} -> {:noreply, event_list, new_state}
+  defp dispatch_messages(state, message_list \\ [])
+  defp dispatch_messages(%State{demand: 0} = state, message_list), do: {:noreply, message_list, state}
+  defp dispatch_messages(%State{} = state, message_list) do
+    case State.next_message(state) do
+      {:empty, new_state} -> {:noreply, message_list, new_state}
       {:ok, message, new_state} ->
         updated_state = State.update_demand(new_state, -1)
-        dispatch_events(updated_state, [message|event_list])
+        dispatch_messages(updated_state, [message|message_list])
     end
   end
 end

@@ -14,19 +14,19 @@ defmodule Alchemessages.ChannelTest do
   end
 
   describe "#publish" do
-    test "send event to a worker when it subscribe to the topic" do
+    test "send message to a worker when it subscribe to the topic" do
       {:ok, pid} = Alchemessages.Channel.start_link(:channel)
       Alchemessages.Support.TestConsumer.start_link(pid, self())
-      Alchemessages.Channel.publish(:channel, :event1)
+      Alchemessages.Channel.publish(:channel, :message1)
       :timer.sleep(100)
-      assert_received{:received, [:event1]}
+      assert_received{:received, [:message1]}
     end
 
     test "does nothing when no consumers are started" do
       Alchemessages.Channel.start_link(:channel)
-      Alchemessages.Channel.publish(:channel, :event1)
+      Alchemessages.Channel.publish(:channel, :message1)
       :timer.sleep(100)
-      refute_received{:received, [:event1]}
+      refute_received{:received, [:message1]}
     end
   end
 end

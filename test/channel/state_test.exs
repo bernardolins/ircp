@@ -13,11 +13,11 @@ defmodule Alchemessages.Channel.StateTest do
   end
 
   describe "#buffer_message" do
-    test "adds a new event on state if buffer is not full" do
+    test "adds a new message on state if buffer is not full" do
       state = State.new
       assert :queue.is_empty(state.buffer)
       assert state.buffer_size == 0
-      state = State.buffer_message(state, :event1)
+      state = State.buffer_message(state, :message1)
       assert :queue.len(state.buffer) == 1
       assert state.buffer_size == 1
     end
@@ -26,32 +26,32 @@ defmodule Alchemessages.Channel.StateTest do
       state = State.new([max_buffer_size: 1])
       assert :queue.is_empty(state.buffer)
       assert state.buffer_size == 0
-      state = State.buffer_message(state, :event1)
+      state = State.buffer_message(state, :message1)
       assert :queue.len(state.buffer) == 1
-      state = State.buffer_message(state, :event1)
+      state = State.buffer_message(state, :message1)
       assert :queue.len(state.buffer) == 1
       assert state.buffer_size == 1
     end
   end
 
-  describe "#next_event" do
-    test "returns empty and the state if there are no events" do
+  describe "#next_message" do
+    test "returns empty and the state if there are no messages" do
       state = State.new
-      assert {:empty, _} = State.next_event(state)
+      assert {:empty, _} = State.next_message(state)
       assert state.buffer_size == 0
     end
 
-    test "removes the oldest event from the state" do
+    test "removes the oldest message from the state" do
       state =
         State.new
-        |> State.buffer_message(:event1)
-        |> State.buffer_message(:event2)
+        |> State.buffer_message(:message1)
+        |> State.buffer_message(:message2)
 
       assert state.buffer_size == 2
 
-      assert {:ok, :event1, state} = State.next_event(state)
+      assert {:ok, :message1, state} = State.next_message(state)
       assert state.buffer_size == 1
-      assert {:ok, :event2, state} = State.next_event(state)
+      assert {:ok, :message2, state} = State.next_message(state)
       assert state.buffer_size == 0
     end
   end
