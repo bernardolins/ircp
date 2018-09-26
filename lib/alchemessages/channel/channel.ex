@@ -31,7 +31,7 @@ defmodule Alchemessages.Channel do
 
   defp store_message(%State{} = state, message) do
     state
-    |> State.store_event(message)
+    |> State.buffer_message(message)
     |> dispatch_events
   end
 
