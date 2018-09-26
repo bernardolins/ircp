@@ -1,26 +1,44 @@
 defmodule Alchemessages.Channel.State do
   @moduledoc false
 
-  defstruct [buffer: :queue.new, demand: 0, options: []]
+  defstruct [
+    buffer: :queue.new,
+    buffer_size: 0,
+    demand: 0,
+    options: []
+  ]
 
-  def new(opts \\ []), do: %__MODULE__{options: opts}
+  @default_max_buffer_size Application.get_env(:alchemessages, :max_buffer_size, 2_000)
 
-  def store_event(%__MODULE__{} = old_state, event) do
-    new_event_store = :queue.in_r(event, old_state.buffer)
-    %__MODULE__{old_state | buffer: new_event_store}
+  def new(opts \\ []) do
+    %__MODULE__{options: opts}
   end
 
-  def next_event(%__MODULE__{} = old_state) do
-    case :queue.out_r(old_state.buffer) do
-      {{:value, event}, buffer} ->
-        {:ok, event, %__MODULE__{old_state | buffer: buffer}}
-      {:empty, buffer} ->
-        {:empty, %__MODULE__{old_state | buffer: buffer}}
+  def store_event(%__MODULE__{buffer: buffer, buffer_size: buffer_size, options: opts} = state, event) do
+    max_buffer_size = Keyword.get(opts, :max_buffer_size, @default_max_buffer_size)
+
+    if buffer_size < max_buffer_size do
+      buffer_message(state, event)
+    else
+      state
     end
   end
 
-  def update_demand(%__MODULE__{} = old_state, demand_delta \\ 1) do
-    new_demand = old_state.demand+demand_delta
-    %__MODULE__{old_state | demand: new_demand}
+  def next_event(%__MODULE__{buffer: buffer, buffer_size: buffer_size} = state) do
+    case :queue.out_r(buffer) do
+      {{:value, event}, buffer} ->
+        {:ok, event, %__MODULE__{state | buffer: buffer, buffer_size: buffer_size-1}}
+      {:empty, buffer} ->
+        {:empty, %__MODULE__{state | buffer: buffer, buffer_size: buffer_size}}
+    end
+  end
+
+  def update_demand(%__MODULE__{demand: demand} = state, demand_delta \\ 1) do
+    demand = if demand+demand_delta > 0, do: demand+demand_delta, else: 0
+    %__MODULE__{state | demand: demand}
+  end
+
+  defp buffer_message(%__MODULE__{buffer: buffer, buffer_size: buffer_size} = state, event) do
+    %__MODULE__{state | buffer: :queue.in_r(event, buffer), buffer_size: buffer_size+1}
   end
 end
