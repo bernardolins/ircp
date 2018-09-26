@@ -12,12 +12,12 @@ defmodule Alchemessages.Channel.StateTest do
    end
   end
 
-  describe "#store_event" do
+  describe "#buffer_message" do
     test "adds a new event on state if buffer is not full" do
       state = State.new
       assert :queue.is_empty(state.buffer)
       assert state.buffer_size == 0
-      state = State.store_event(state, :event1)
+      state = State.buffer_message(state, :event1)
       assert :queue.len(state.buffer) == 1
       assert state.buffer_size == 1
     end
@@ -26,9 +26,9 @@ defmodule Alchemessages.Channel.StateTest do
       state = State.new([max_buffer_size: 1])
       assert :queue.is_empty(state.buffer)
       assert state.buffer_size == 0
-      state = State.store_event(state, :event1)
+      state = State.buffer_message(state, :event1)
       assert :queue.len(state.buffer) == 1
-      state = State.store_event(state, :event1)
+      state = State.buffer_message(state, :event1)
       assert :queue.len(state.buffer) == 1
       assert state.buffer_size == 1
     end
@@ -44,8 +44,8 @@ defmodule Alchemessages.Channel.StateTest do
     test "removes the oldest event from the state" do
       state =
         State.new
-        |> State.store_event(:event1)
-        |> State.store_event(:event2)
+        |> State.buffer_message(:event1)
+        |> State.buffer_message(:event2)
 
       assert state.buffer_size == 2
 
