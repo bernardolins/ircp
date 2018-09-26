@@ -6,6 +6,10 @@ defmodule Alchemessages.Channel.StateTest do
     test "creates a struct with an empty queue and demand 0" do
       assert %{buffer: {[], []}, demand: 0} = State.new
    end
+
+    test "accepts and option list and store it on structure" do
+      assert %{options: [some: "option"]} = State.new([some: "option"])
+   end
   end
 
   describe "#store_event" do

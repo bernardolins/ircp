@@ -5,11 +5,11 @@ defmodule Alchemessages.Channel do
 
   alias Alchemessages.Channel.State
 
-  def start_link(channel_name), do: GenStage.start_link(__MODULE__, channel_name)
+  def start_link(channel_name, opts \\ []), do: GenStage.start_link(__MODULE__, {channel_name, opts})
 
-  def init(channel_name) do
-    case Alchemessages.Registry.Channel.register(channel_name) do
-      :ok -> {:producer, %State{}, dispatcher: GenStage.BroadcastDispatcher}
+  def init({channel_name, opts}) do
+    case Alchemessages.Registry.Channel.register(channel_name, opts) do
+      :ok -> {:producer, State.new(), dispatcher: GenStage.BroadcastDispatcher}
       {:error, reason} -> {:stop, reason}
     end
   end

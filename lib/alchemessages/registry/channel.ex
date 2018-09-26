@@ -9,8 +9,8 @@ defmodule Alchemessages.Registry.Channel do
     Registry.child_spec(@registry_default_opts)
   end
 
-  def register(channel_name) do
-    case Registry.register(__MODULE__, channel_name, []) do
+  def register(channel_name, options \\ []) do
+    case Registry.register(__MODULE__, channel_name, options) do
       {:ok, _} -> :ok
       {:error, reason} -> {:error, reason}
     end

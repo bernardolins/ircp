@@ -1,9 +1,9 @@
 defmodule Alchemessages.Channel.State do
   @moduledoc false
 
-  defstruct [buffer: :queue.new, demand: 0]
+  defstruct [buffer: :queue.new, demand: 0, options: []]
 
-  def new(), do: %__MODULE__{}
+  def new(opts \\ []), do: %__MODULE__{options: opts}
 
   def store_event(%__MODULE__{} = old_state, event) do
     new_event_store = :queue.in_r(event, old_state.buffer)
