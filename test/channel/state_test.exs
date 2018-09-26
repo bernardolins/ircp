@@ -13,11 +13,24 @@ defmodule Alchemessages.Channel.StateTest do
   end
 
   describe "#store_event" do
-    test "adds a new event on state" do
+    test "adds a new event on state if buffer is not full" do
       state = State.new
       assert :queue.is_empty(state.buffer)
+      assert state.buffer_size == 0
       state = State.store_event(state, :event1)
       assert :queue.len(state.buffer) == 1
+      assert state.buffer_size == 1
+    end
+
+    test "doest not store message on state if buffer is full" do
+      state = State.new([max_buffer_size: 1])
+      assert :queue.is_empty(state.buffer)
+      assert state.buffer_size == 0
+      state = State.store_event(state, :event1)
+      assert :queue.len(state.buffer) == 1
+      state = State.store_event(state, :event1)
+      assert :queue.len(state.buffer) == 1
+      assert state.buffer_size == 1
     end
   end
 
@@ -25,6 +38,7 @@ defmodule Alchemessages.Channel.StateTest do
     test "returns empty and the state if there are no events" do
       state = State.new
       assert {:empty, _} = State.next_event(state)
+      assert state.buffer_size == 0
     end
 
     test "removes the oldest event from the state" do
@@ -33,8 +47,12 @@ defmodule Alchemessages.Channel.StateTest do
         |> State.store_event(:event1)
         |> State.store_event(:event2)
 
+      assert state.buffer_size == 2
+
       assert {:ok, :event1, state} = State.next_event(state)
+      assert state.buffer_size == 1
       assert {:ok, :event2, state} = State.next_event(state)
+      assert state.buffer_size == 0
     end
   end
 
@@ -51,6 +69,21 @@ defmodule Alchemessages.Channel.StateTest do
       assert state.demand == 0
       state = State.update_demand(state)
       assert state.demand == 1
+    end
+
+    test "accepts negative demand" do
+      state = State.new
+      state = State.update_demand(state, 10)
+      assert state.demand == 10
+      state = State.update_demand(state, -1)
+      assert state.demand == 9
+    end
+
+    test "does not decrement demand bellow 0" do
+      state = State.new
+      assert state.demand == 0
+      state = State.update_demand(state, -1)
+      assert state.demand == 0
     end
   end
 end
