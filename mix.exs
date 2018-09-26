@@ -1,9 +1,9 @@
-defmodule Alchemessages.MixProject do
+defmodule IRCP.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :alchemessages,
+      app: :ircp,
       version: "0.1.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -15,7 +15,7 @@ defmodule Alchemessages.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Alchemessages.Application, []}
+      mod: {IRCP.Application, []}
     ]
   end
 

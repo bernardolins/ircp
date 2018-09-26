@@ -1,6 +1,6 @@
-defmodule Alchemessages.Channel.StateTest do
+defmodule IRCP.Channel.StateTest do
   use ExUnit.Case
-  alias Alchemessages.Channel.State
+  alias IRCP.Channel.State
 
   describe "#new" do
     test "creates a struct with an empty queue and demand 0" do

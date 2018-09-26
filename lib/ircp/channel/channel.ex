@@ -1,21 +1,21 @@
-defmodule Alchemessages.Channel do
+defmodule IRCP.Channel do
   @moduledoc false
 
   use GenStage
 
-  alias Alchemessages.Channel.State
+  alias IRCP.Channel.State
 
-  def start_link(channel_name, opts \\ []), do: GenStage.start_link(__MODULE__, {channel_name, opts})
+  def create(channel_name, opts \\ []), do: GenStage.start_link(__MODULE__, {channel_name, opts})
 
   def init({channel_name, opts}) do
-    case Alchemessages.Registry.Channel.register(channel_name, opts) do
+    case IRCP.Registry.Channel.register(channel_name, opts) do
       :ok -> {:producer, State.new(), dispatcher: GenStage.BroadcastDispatcher}
       {:error, reason} -> {:stop, reason}
     end
   end
 
   def publish(channel_name, message) do
-    case Alchemessages.Registry.Channel.lookup(channel_name) do
+    case IRCP.Registry.Channel.lookup(channel_name) do
       {:ok, {pid, _}} -> GenStage.cast(pid, {:publish, message})
       {:error, :not_found} -> {:error, :topic_not_found}
     end

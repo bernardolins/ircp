@@ -1,4 +1,4 @@
-defmodule Alchemessages.Registry.Channel do
+defmodule IRCP.Registry.Channel do
   @registry_default_opts [
     keys: :unique,
     name: __MODULE__,

@@ -1,4 +1,4 @@
-defmodule Alchemessages.Channel.State do
+defmodule IRCP.Channel.State do
   @moduledoc false
 
   defstruct [
@@ -8,7 +8,7 @@ defmodule Alchemessages.Channel.State do
     options: []
   ]
 
-  @default_max_buffer_size Application.get_env(:alchemessages, :max_buffer_size, 2_000)
+  @default_max_buffer_size Application.get_env(:ircp, :max_buffer_size, 2_000)
 
   def new(opts \\ []) do
     %__MODULE__{options: opts}

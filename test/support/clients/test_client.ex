@@ -1,5 +1,5 @@
-defmodule Alchemessages.Support.TestListener do
-  use Alchemessages.Listener
+defmodule IRCP.Support.TestClient do
+  use IRCP.Client
 
   def join(_, opts) do
     test_pid = Keyword.get(opts, :pid, nil)

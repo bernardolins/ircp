@@ -1,8 +1,8 @@
-defmodule AlchemessagesTest do
+defmodule IRCPTest do
   use ExUnit.Case
-  doctest Alchemessages
+  doctest IRCP
 
   test "greets the world" do
-    assert Alchemessages.hello() == :world
+    assert IRCP.hello() == :world
   end
 end

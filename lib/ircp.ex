@@ -1,6 +1,6 @@
-defmodule Alchemessages do
+defmodule IRCP do
   @moduledoc """
-  Documentation for Alchemessages.
+  Documentation for IRCP.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule Alchemessages do
 
   ## Examples
 
-      iex> Alchemessages.hello()
+      iex> IRCP.hello()
       :world
 
   """

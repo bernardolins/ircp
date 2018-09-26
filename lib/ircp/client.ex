@@ -1,4 +1,4 @@
-defmodule Alchemessages.Listener do
+defmodule IRCP.Client do
   def ask(who, message), do: GenStage.call(who, message)
   def tell(who, message), do: GenStage.cast(who, message)
 
@@ -12,7 +12,7 @@ defmodule Alchemessages.Listener do
 
       def init({channel_name, options}) do
         with {:ok, initial_state} <- join(channel_name, options),
-             {:ok, {channel, []}} <- Alchemessages.Registry.Channel.lookup(channel_name)
+             {:ok, {channel, []}} <- IRCP.Registry.Channel.lookup(channel_name)
         do
           {:consumer, initial_state, subscribe_to: [channel]}
         else
