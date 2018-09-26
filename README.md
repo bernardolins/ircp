@@ -40,7 +40,7 @@ end
 
 Create a channel and let then talk:
 
-```
+```elixir
 iex(1)> IRCP.Channel.create("#hello")
 {:ok, #PID<0.179.0>}
 iex(2)> HelloClient.start_link("#hello")
