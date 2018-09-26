@@ -16,6 +16,12 @@ defmodule Alchemessages.Registry.ChannelTest do
       assert Registry.lookup(Alchemessages.Registry.Channel, :channel) == [{self(), []}]
     end
 
+    test "register a new topic and channel options if no topic is registered for the same channel" do
+      assert Registry.lookup(Alchemessages.Registry.Channel, :channel) == []
+      assert :ok == Channel.register(:channel, [some: "option"])
+      assert Registry.lookup(Alchemessages.Registry.Channel, :channel) == [{self(), [some: "option"]}]
+    end
+
     test "can't reg:channelister the same topic twice for a channel" do
       assert Registry.lookup(Alchemessages.Registry.Channel, :channel) == []
       assert :ok == Channel.register(:channel)
