@@ -1,21 +1,21 @@
 defmodule Alchemessages.Channel.State do
   @moduledoc false
 
-  defstruct [data: :queue.new, demand: 0]
+  defstruct [buffer: :queue.new, demand: 0]
 
   def new(), do: %__MODULE__{}
 
   def store_event(%__MODULE__{} = old_state, event) do
-    new_event_store = :queue.in_r(event, old_state.data)
-    %__MODULE__{old_state | data: new_event_store}
+    new_event_store = :queue.in_r(event, old_state.buffer)
+    %__MODULE__{old_state | buffer: new_event_store}
   end
 
   def next_event(%__MODULE__{} = old_state) do
-    case :queue.out_r(old_state.data) do
-      {{:value, event}, data} ->
-        {:ok, event, %__MODULE__{old_state | data: data}}
-      {:empty, data} ->
-        {:empty, %__MODULE__{old_state | data: data}}
+    case :queue.out_r(old_state.buffer) do
+      {{:value, event}, buffer} ->
+        {:ok, event, %__MODULE__{old_state | buffer: buffer}}
+      {:empty, buffer} ->
+        {:empty, %__MODULE__{old_state | buffer: buffer}}
     end
   end
 

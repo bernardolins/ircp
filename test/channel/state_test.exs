@@ -4,16 +4,16 @@ defmodule Alchemessages.Channel.StateTest do
 
   describe "#new" do
     test "creates a struct with an empty queue and demand 0" do
-      assert %{data: {[], []}, demand: 0} = State.new
-    end
+      assert %{buffer: {[], []}, demand: 0} = State.new
+   end
   end
 
   describe "#store_event" do
     test "adds a new event on state" do
       state = State.new
-      assert :queue.is_empty(state.data)
+      assert :queue.is_empty(state.buffer)
       state = State.store_event(state, :event1)
-      assert :queue.len(state.data) == 1
+      assert :queue.len(state.buffer) == 1
     end
   end
 
