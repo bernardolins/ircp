@@ -1,55 +1,58 @@
 # IRCP
 
-IRCP comes from "IRC for Proccess" and is like IRC, but for proccess!
+Create channels where you processes can talk to each other.
 
-IRCP is powered by GenStage and Elixir's process Registry and allows you to create channels where a client (process) can join to send and receive messages from other clients on the same channel. Clients can also send private synchronous or asynchronous messages to each other.
+IRCP is powered by GenStage and Elixir's process Registry and allows you to create channels. Any process can publish a message to a channel, but only processes subscribed to a channel will receive then. Clients can also handle private messages and questions.
 
 ## Getting Started
 
-Define a client module:
+A client can implement some callbacks who will be called when a it joins a channel, receive messages and questions.
 
 ```elixir
-defmodule HelloClient do
+defmodule Counter do
   use IRCP.Client
 
+  def set_info(options) do
+    initial_value = Keyword.get(options, :initial_value, 0)
+    {:ok, initial_value}
+  end
+
   # This callback is called when a client joins a channel.
-  def join(channel, _) do
-    Alchemessages.Channel.publish(channel, {:joined, self()})
-
-    {:ok, :whatever}
+  def handle_join(_channel, initial_value) do
+    {:ok, initial_value}
   end
 
-  # When a client publish a message to a channel, the other clients can handle that
+  # When a someone publish a message to a channel, the other clients can handle that
   # message and do something to it. This callback does not send any reply to the sender.
-  def handle_message({:joined, who}, value) do
-    if who != self() do
-      IO.puts "Welcome #{inspect who}, I am #{inspect self()}"
-    end
-
-    {:noreply, :whatever}
+  def handle_message({:increment, delta}, value) do
+    {:noreply, value+delta}
   end
 
-  # When someone sends a question to a client, the proccess must reply it.
+  # When someone sends a question to a client, the sender will wait for a reply.
   # Like GenServer's handle_cast, the second tuple element is the response
   # and the third is the client state.
-  def handle_question(:whoami, _, _) do
-    {:reply, self(), :whatever}
+  def handle_question(:current_value, _, value) do
+    {:reply, value, value}
   end
 end
 ```
 
-Create a channel and let then talk:
+## Sending messages to a client
 
 ```elixir
-iex(1)> IRCP.Channel.create("#hello")
-{:ok, #PID<0.179.0>}
-iex(2)> HelloClient.start_link("#hello")
-{:ok, #PID<0.181.0>}
-iex(3)> HelloClient.start_link("#hello")
-Welcome #PID<0.183.0>, I am #PID<0.181.0>
-{:ok, #PID<0.183.0>}
-iex(4)> HelloClient.start_link("#hello")
-Welcome #PID<0.185.0>, I am #PID<0.183.0>
-Welcome #PID<0.185.0>, I am #PID<0.181.0>
-{:ok, #PID<0.185.0>}
+iex(1)> {:ok, client1} = Counter.create(initial_value: 0)
+{:ok, #PID<0.188.0>}
+
+iex(2)> IRCP.Channel.create(:values)
+{:ok, #PID<0.190.0>}
+
+iex(3)> IRCP.Client.join(client1, :values)
+:ok
+
+iex(4)> IRCP.Channel.publish(:values, {:increment, 1})
+:ok
+
+iex(5)> IRCP.Client.private_question(client1, :current_value)
+1
+iex(6)>
 ```
