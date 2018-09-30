@@ -140,15 +140,6 @@ defmodule IRCP.Client do
             {:reply, :not_implemented, state}
         end
       end
-
-      defp assert_async_response({:noreply, new_state}), do: {:noreply, [], new_state}
-      defp assert_async_response(invalid_return), do: call_stop(:bad_return_value, invalid_return, nil)
-
-      defp assert_sync_response({:reply, reply, new_state}), do: {:reply, reply, [], new_state}
-      defp assert_sync_response(invalid_return), do: call_stop(:bad_return_value, invalid_return, nil)
-
-      defp call_stop(reason, message, new_state), do: {:stop, {reason, message}, new_state}
-      defp call_stop(reason, message), do: {:stop, {reason, message}}
     end
   end
 end
