@@ -54,5 +54,4 @@ iex(4)> IRCP.Channel.publish(:values, {:increment, 1})
 
 iex(5)> IRCP.Client.private_question(client1, :current_value)
 1
-iex(6)>
 ```
