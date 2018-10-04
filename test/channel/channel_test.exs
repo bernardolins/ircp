@@ -1,5 +1,6 @@
 defmodule IRCP.ChannelTest do
   use ExUnit.Case
+  alias IRCP.Support.ValidationClient
 
   describe "#create" do
     test "stop the channel creation if it is already registered" do
@@ -89,6 +90,21 @@ defmodule IRCP.ChannelTest do
       IRCP.Channel.publish(1, :message1)
       :timer.sleep(100)
       assert_received{:received, [:message1]}
+    end
+  end
+
+  describe "#join" do
+    test "allows a client to join a channel" do
+      IRCP.Channel.create(:channel)
+      {:ok, pid} = ValidationClient.create(pid: self())
+      assert :ok = IRCP.Channel.join(:channel, pid)
+      IRCP.Channel.publish(:channel, :test_callback)
+      assert_receive {:handle_message_called, _}
+    end
+
+    test "returns error when a client tries do join a channel that does not exist" do
+      {:ok, pid} = ValidationClient.create(pid: self())
+      assert {:error, :not_found} == IRCP.Channel.join(:channel, pid)
     end
   end
 end

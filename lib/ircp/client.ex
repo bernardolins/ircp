@@ -7,16 +7,6 @@ defmodule IRCP.Client do
     GenStage.cast(who, message)
   end
 
-  def join(who, channel_name) do
-    with {:ok, {channel, _}} <- IRCP.Registry.Channel.lookup(channel_name),
-         {:ok, _} <- GenStage.sync_subscribe(who, to: channel, channel_name: channel_name)
-    do
-      :ok
-    else
-      error -> error
-    end
-  end
-
   defmacro __using__(_) do
     quote do
       use GenStage

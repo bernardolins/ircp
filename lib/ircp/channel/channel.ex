@@ -21,6 +21,16 @@ defmodule IRCP.Channel do
     end
   end
 
+  def join(channel_name, client) do
+    with {:ok, {channel, _}} <- IRCP.Registry.Channel.lookup(channel_name),
+         {:ok, _} <- GenStage.sync_subscribe(client, to: channel, channel_name: channel_name)
+    do
+      :ok
+    else
+      error -> error
+    end
+  end
+
   def handle_cast({:publish, message}, %State{} = state) do
     store_message(state, message)
   end

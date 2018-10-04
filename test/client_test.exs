@@ -11,7 +11,7 @@ defmodule IRCP.ClientTest do
 
     test "is called when a client is created with the argument passed to create" do
       assert {:ok, pid} = ValidationClient.create(pid: self())
-      assert_receive {:set_info_called, pid}
+      assert_receive {:set_info_called, ^pid}
     end
   end
 
@@ -19,8 +19,8 @@ defmodule IRCP.ClientTest do
     test "is called when a client joins a channel" do
       IRCP.Channel.create(:test_callback)
       {:ok, pid} = ValidationClient.create(pid: self())
-      IRCP.Client.join(pid, :test_callback)
-      assert_receive {:handle_join_called, :test_callback, pid}
+      IRCP.Channel.join(:test_callback, pid)
+      assert_receive {:handle_join_called, :test_callback, ^pid}
     end
 
     test "is called when a client joins a channel on it's creation" do
@@ -33,8 +33,8 @@ defmodule IRCP.ClientTest do
       Process.flag(:trap_exit, true)
       IRCP.Channel.create(:invalid_return)
       {:ok, pid} = ValidationClient.create()
-      catch_exit IRCP.Client.join(pid, :invalid_return)
-      assert_receive {:EXIT, pid, {:shutdown, :bad_return_value}}
+      catch_exit IRCP.Channel.join(:invalid_return, pid)
+      assert_receive {:EXIT, ^pid, {:shutdown, :bad_return_value}}
     end
   end
 
@@ -42,28 +42,28 @@ defmodule IRCP.ClientTest do
     test "is called when a client receive a private message" do
       {:ok, pid} = ValidationClient.create(pid: self())
       IRCP.Client.private_message(pid, :test_callback)
-      assert_receive {:handle_message_called, pid}
+      assert_receive {:handle_message_called, ^pid}
     end
 
     test "is called when a client receive a message from the channel" do
       IRCP.Channel.create(:channel)
       {:ok, pid} = ValidationClient.create(pid: self())
-      IRCP.Client.join(pid, :channel)
+      IRCP.Channel.join(:channel, pid)
       IRCP.Channel.publish(:channel, :test_callback)
-      assert_receive {:handle_message_called, pid}
+      assert_receive {:handle_message_called, ^pid}
     end
 
     test "is called when a client receive a send_after message" do
       {:ok, pid} = ValidationClient.create(pid: self())
       :timer.send_after(10, pid, :test_callback)
-      assert_receive {:handle_message_called, pid}
+      assert_receive {:handle_message_called, ^pid}
     end
 
     test "exits process when the return value is not {:noreply, _}" do
       Process.flag(:trap_exit, true)
       {:ok, pid} = ValidationClient.create()
       IRCP.Client.private_message(pid, :invalid_return)
-      assert_receive {:EXIT, pid, {:shutdown, :bad_return_value}}
+      assert_receive {:EXIT, ^pid, {:shutdown, :bad_return_value}}
     end
   end
 
@@ -80,9 +80,9 @@ defmodule IRCP.ClientTest do
 
     test "exits process when the return value is not {:reply, _, _}" do
       Process.flag(:trap_exit, true)
-      {:ok, pid} = ValidationClient.create()
+      {:ok, pid} = ValidationClient.create(pid: self())
       catch_exit IRCP.Client.private_question(pid, :invalid_return)
-      assert_receive {:EXIT, pid, {:shutdown, :bad_return_value}}
+      assert_receive {:EXIT, ^pid, {:shutdown, :bad_return_value}}
     end
   end
 end
