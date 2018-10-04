@@ -1,5 +1,7 @@
 # IRCP
 
+[![Build Status](https://travis-ci.org/bernardolins/ircp.svg?branch=master)](https://travis-ci.org/bernardolins/ircp)
+
 Create channels where you processes can talk to each other.
 
 IRCP is powered by GenStage and Elixir's process Registry and allows you to create channels. Any process can publish a message to a channel, but only processes subscribed to a channel will receive then. Clients can also handle private messages and questions.
