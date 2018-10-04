@@ -17,7 +17,7 @@ defmodule IRCP.Channel do
   def publish(channel_name, message) do
     case IRCP.Registry.Channel.lookup(channel_name) do
       {:ok, {pid, _}} -> GenStage.cast(pid, {:publish, message})
-      {:error, :not_found} -> {:error, :topic_not_found}
+      {:error, :not_found} -> {:error, :channel_not_found}
     end
   end
 
