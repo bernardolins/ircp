@@ -1,6 +1,7 @@
 # IRCP
 
 [![Build Status](https://travis-ci.org/bernardolins/ircp.svg?branch=master)](https://travis-ci.org/bernardolins/ircp)
+[![Coverage Status](https://coveralls.io/repos/github/bernardolins/ircp/badge.svg?branch=master)](https://coveralls.io/github/bernardolins/ircp?branch=master)
 
 Create channels where you processes can talk to each other.
 
